@@ -1,0 +1,3 @@
+> Plugins
+    - Sublime Text Keymap and Settings Importer
+    - Babel ES6/ES7
