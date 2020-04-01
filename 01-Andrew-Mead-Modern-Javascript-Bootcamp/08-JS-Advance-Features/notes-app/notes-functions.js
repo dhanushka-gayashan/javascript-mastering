@@ -1,38 +1,39 @@
+'use strict'
+
 // Read exising notes from localStoroge 
-const getSavedNotes = function () {
+const getSavedNotes = () => {
     const notesJSON = localStorage.getItem('notes')
 
-    if (notesJSON !== null) {
-        return JSON.parse(notesJSON)
-    } else {
+    try {
+        return notesJSON ? JSON.parse(notesJSON) : [] 
+    } catch (error) {
+        console.log('Encounter an error while fetching data from localStorage....')
         return []
-    }
+    }    
 }
 
 // Find and Remove Notes from Array List
-const removeNote = function (id) {
-    const noteIndex = notes.findIndex(function (note) {
-        return note.id === id
-    })
+const removeNote = (id) => {
+    const noteIndex = notes.findIndex((note) => note.id === id)
     if (noteIndex > -1) {
         notes.splice(noteIndex, 1)
     }    
 }
 
 // Genereate DOM Note Element
-const generateNoteDOM = function (note) {
-    const div = document.createElement('div')
-    
-    const removeButton = document.createElement('button')    
+const generateNoteDOM = (note) => {
+    const div = document.createElement('div')    
+    const removeButton = document.createElement('button')  
+    const textAnchor = document.createElement('a')
+
     removeButton.textContent = 'X'
     div.appendChild(removeButton)
-    removeButton.addEventListener('click', function (event) {
+    removeButton.addEventListener('click', (event) => {
         removeNote(note.id)
         saveNotes(notes)
         renderNotes(notes, filters)
     })
-
-    const textAnchor = document.createElement('a')
+    
     note.title.length > 0 ? textAnchor.textContent = note.title : textAnchor.textContent = 'New Note'
     textAnchor.href = `edit.html#${note.id}`
     div.appendChild(textAnchor)
@@ -41,7 +42,7 @@ const generateNoteDOM = function (note) {
 } 
 
 // Sort Values: A-Z
-const sortValuesAZ = function (valueA, valueB) {
+const sortValuesAZ = (valueA, valueB) => {
     if (valueA < valueB) {
         return -1
     } else if (valueA > valueB) {
@@ -52,7 +53,7 @@ const sortValuesAZ = function (valueA, valueB) {
 }
 
 // Sort Values: Z-A
-const sortValuesZA = function (valueA, valueB) {
+const sortValuesZA = (valueA, valueB) => {
     if (valueA > valueB) {
         return -1
     } else if (valueA < valueB) {
@@ -63,44 +64,34 @@ const sortValuesZA = function (valueA, valueB) {
 }
 
 // Sort notes by one of three ways
-const sortNotes = function (notes, sortBy) {
+const sortNotes = (notes, sortBy) => {
     if (sortBy === 'byEdited') {
-        return notes.sort(function (a, b) {
-            return sortValuesZA(a.updatedAt, b.updatedAt)
-        })
+        return notes.sort((a, b) => sortValuesZA(a.updatedAt, b.updatedAt))
     } else if (sortBy === 'byCreated') {
-        return notes.sort(function (a, b) {
-            return sortValuesZA(a.createdAt, b.createdAt)
-        })
+        return notes.sort((a, b) => sortValuesZA(a.createdAt, b.createdAt))
     } else {
-        return notes.sort(function (a, b) {
-            return sortValuesAZ(a.title, b.title)
-        })
+        return notes.sort((a, b) => sortValuesAZ(a.title, b.title))
     }
 }
 
 // Render DOM Note Elements
-const renderNotes = function (notes, filters) {
-    const filteredNotes = notes.filter(function (note) {
-        return note.title.toLowerCase().includes(filters.searchText.toLowerCase())
-    })
+const renderNotes = (notes, filters) => {
+    const filteredNotes = notes.filter((note) => note.title.toLowerCase().includes(filters.searchText.toLowerCase()))
 
     document.querySelector('#notes').innerHTML = ''
 
     const sortedNotes = sortNotes(filteredNotes, filters.sortBy)
 
-    sortedNotes.forEach(function (note) {
+    sortedNotes.forEach((note) => {
         const div = generateNoteDOM(note)
         document.querySelector('#notes').appendChild(div)
     })
 }
 
 // Save Notes into LocalStorage
-const saveNotes = function (notes) {
+const saveNotes = (notes) => {
     localStorage.setItem('notes', JSON.stringify(notes))
 }
 
 // Generte Last Edited Message 
-const generateLastEdited = function (timestamp) {
-    return `Last edited ${moment(timestamp).fromNow()}`
-}
+const generateLastEdited = (timestamp) => `Last edited ${moment(timestamp).fromNow()}`
