@@ -7,4 +7,7 @@
 > We can use Live Server VS Code Extention as well.
 
 > User Web Server 
-    - liver-server <path_to_app_directory>    
+    - liver-server <path_to_app_directory> 
+
+> Uninstall
+    - npm uninstall -g live-server

@@ -60,3 +60,5 @@ class Hangman {
         return status
     }
 }
+
+export { Hangman as default }

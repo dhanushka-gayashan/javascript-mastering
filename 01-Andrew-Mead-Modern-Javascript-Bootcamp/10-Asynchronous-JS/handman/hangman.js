@@ -31,7 +31,7 @@ class Hangman {
             this.remainingGuesses--
         }
 
-        game.updateStatus()
+        this.updateStatus()
     }
 
     updateStatus() {
