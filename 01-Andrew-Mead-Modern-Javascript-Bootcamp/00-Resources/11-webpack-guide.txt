@@ -1,0 +1,240 @@
+> Setup Project 
+    - Project Structure 
+        - project
+            - public
+                - scripts 
+                - index.html  
+            - src 
+                - index.js
+
+    - Initialize Boilerplate
+        - cd <project>
+        - npm init
+
+    - Add Bundle.js into index.html 
+        - <script src="scripts/bundle.js"></script>
+
+    - Install Webpack 
+        - npm install webpack webpack-cli 
+
+    - Add Live-Server Locally (Cannot use Live-Server Globally)
+        - cd <project>
+        - npm uninstall -g live-server        
+        - npm install live-server
+
+    - Setup "Scripts" Command in 'package.json'
+        - Remove default configurations from "scripts" section
+        
+        - Add following line to "scripts" section
+            "server": "live-server public",
+            "build": "webpack",
+            "clean": "rm -rf node_modules", 
+            "reinstall": "npm run clean && npm install", 
+            "rebuild": "npm run clean && npm install && npm run build"
+
+    - Cretae seperate Webpakc Configuration file 
+        - Create "webpack.config.js" in root of the project 
+
+    - Add following basic configurations into "webpack.config.js"
+        const path = require('path')
+
+        module.exports = {
+            entry: './src/index.js',
+            output: {
+                path: path.resolve(__dirname, 'public/scripts'),
+                filename: bundle.js
+            }
+        }
+
+    - Build the project (this create Bundle.js file)
+        - npm run webpack 
+
+    - Deploy to local live-server
+        - npm run server
+
+ > Add Babel into Webpack 
+    - Install Babel Cli
+        - npm install babel-cli
+
+    - Install Babel Presets
+        - npm install babel-preset-env
+
+    - Install Bable Loader (Version is Important here)
+        - npm install babel-loader@7.1.4
+
+    - Install Babel-Polyfill (Set Run Times)
+        - npm install babel-polyfill@6.26.0
+
+    - Install Bable-Plugin-Transfor-Object-Rest-Spread (Support Object Spread Operator)
+        - npm install babel-plugin-transform-object-rest-spread@6.26.0
+
+    - Change the "webpack.config.js" as follows
+        const path = require('path')
+        
+        module.exports = {
+            entry: ['babel-polyfill', './src/index.js'],
+            output: {
+                path: path.resolve(__dirname, 'public/scripts'),
+                filename: 'bundle.js'
+            },
+            module: {
+                rules: [{
+                    test: /\.js$/,
+                    exclude: /node_modules/,
+                    use: {
+                        loader: 'babel-loader',
+                        options: {
+                            presets: ['env'],
+                            plugins: ['transform-object-rest-spread']
+                        }
+                    }
+                }]
+            }
+        }
+
+    - Change the 'script' section of 'package.json' as follows 
+        "server": "live-server public",
+        "build": "webpack",
+        "clean": "rm -rf node_modules",
+        "reinstall": "npm run clean && npm install",
+        "rebuild": "npm run clean && npm install && npm run webpack"
+
+    - Build the project (this create Bundle.js file)
+        - npm run build 
+
+    - Deploy to local live-server
+        - npm run server
+
+> Configure Webpack Dev Server (Bundle.js file is a virtual file. Not exist in "script" directory )
+    - Install webpack-dev-server 
+        - npm install webpack-dev-server@3.10.3
+
+   - Change the "webpack.config.js" as follows
+        const path = require('path')
+        
+        module.exports = {
+            entry: './src/index.js',
+            output: {
+                path: path.resolve(__dirname, 'public/scripts'),
+                filename: 'bundle.js'
+            },
+            module: {
+                rules: [{
+                    test: /\.js$/,
+                    exclude: /node_modules/,
+                    use: {
+                        loader: 'babel-loader',
+                        options: {
+                            presets: ['env']
+                        }
+                    }
+                }]
+            },
+            devServer: {
+                contentBase: path.resolve(__dirname, 'public'),
+                publicPath: '/scripts'
+            }
+        }
+
+    - Change the 'script' section of 'package.json' as follows 
+        "dev-server": "webpack-dev-server",
+        "clean": "rm -rf node_modules",
+        "reinstall": "npm run clean && npm install",
+        "rebuild": "npm run clean && npm install && npm run dev-server"  
+
+    - Start Server (No need to build. Server is looking after it as well)
+        - npm run dev-server
+
+> Set Environment Mode 
+    - Change the 'script' section of 'package.json' as follows 
+        "dev-server": "webpack-dev-server --mode development",
+        "build": "webpack --mode production",
+        "clean": "rm -rf node_modules",
+        "reinstall": "npm run clean && npm install",
+        "rebuild": "npm run clean && npm install && npm run dev-server" 
+
+    - For Developmen Environment 
+        - npm run dev-server 
+
+    - For Production Environmet 
+        - npm run build
+
+> Set Source Map (Show correct code lines in Browser Dev Tools)
+    - Change the "webpack.config.js" as follows
+        const path = require('path')
+        
+        module.exports = {
+            entry: './src/index.js',
+            output: {
+                path: path.resolve(__dirname, 'public/scripts'),
+                filename: 'bundle.js'
+            },
+            module: {
+                rules: [{
+                    test: /\.js$/,
+                    exclude: /node_modules/,
+                    use: {
+                        loader: 'babel-loader',
+                        options: {
+                            presets: ['env']
+                        }
+                    }
+                }]
+            },
+            devServer: {
+                contentBase: path.resolve(__dirname, 'public'),
+                publicPath: '/scripts'
+            },
+            devtool: 'source-map'
+        } 
+
+> Create Multiple Bundle JS files for Multiple HTLM files 
+    - Create Multiple JS files in 'src' directory 
+        - index.js for index.html 
+        - edit.js for edit.html
+    
+    - Change the "webpack.config.js" as follows
+        const path = require('path')
+        
+        module.exports = {
+            entry: {
+                'index': ['babel-polyfill', './src/index.js'],
+                'edit': ['babel-polyfill', './src/edit.js']
+            },
+            output: {
+                path: path.resolve(__dirname, 'public/scripts'),
+                filename: '[name]-bundle.js'
+            },
+            module: {
+                rules: [{
+                    test: /\.js$/,
+                    exclude: /node_modules/,
+                    use: {
+                        loader: 'babel-loader',
+                        options: {
+                            presets: ['env']
+                        }
+                    }
+                }]
+            },
+            devServer: {
+                contentBase: path.resolve(__dirname, 'public'),
+                publicPath: '/scripts'
+            },
+            devtool: 'source-map'
+        }
+
+    - Add Bundle JS files into HTML files
+        - <script src="scripts/index-bundle.js"></script> for index.html 
+        - <script src="scripts/edit-bundle.js"></script> for edit.html
+
+> Manage 3rd Party Libraries
+    - Install UUID 3rd Party Libaray into Node Projects
+        - npm install uuid
+
+    - There are 2 ways that we can import 3rd party library into our code
+        - import uuidv4 from 'uuid/v4'
+        - const uuidv4 = require('uuid/v4')
+        
+    - Remove 3rd Party Library from Node Projects
+        - npm uninstall uuid 

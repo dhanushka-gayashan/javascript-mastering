@@ -1,0 +1,52 @@
+> Install Babel Cli Globally
+    - npm install -g babel-cli
+    - babel --version 
+
+> Create output file (without preset)
+    - babel <source_file> -o <destination_file>
+
+> Setup a Project
+    - Project Structure 
+        - project
+            - public
+                - scripts 
+                - index.html  
+            - src 
+                - index.js
+
+    - Add Bundle.js into index.html 
+        - <script src="scripts/bundle.js"></script>
+
+    - Initialize Project
+        - cd <project>
+        - npm init 
+
+    - Add Babel Cli Locally (Cannot use Babel CLI Globally)
+        - cd <project>
+        - npm uninstall -g babel-cli        
+        - npm install babel-cli
+
+    - Add Live-Server Locally (Cannot use Live-Server Globally)
+        - cd <project>
+        - npm uninstall -g live-server        
+        - npm install live-server
+
+    - Install Bable Preset - Should install as a local npm module
+        - cd <project>
+        - npm install babel-preset-env 
+
+    - Setup "Scripts" Command in 'package.json'
+        - Remove default configurations from "scripts" section
+        
+        - Add following line to "scripts" section
+            "server": "live-server public",
+            "build": "babel src/index.js --out-file public/scripts/bundle.js --presets env --watch", // --watch: identify source js file changers real-time
+            "clean": "rm -rf node_modules", 
+            "reinstall": "npm run clean && npm install", 
+            "rebuild": "npm run clean && npm install && npm run build"
+    
+    - Build the project (this create Bundle.js file)
+        - npm run build
+
+    - Deploy to local live-server
+        - npm run server
